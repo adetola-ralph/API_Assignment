@@ -27,6 +27,11 @@ $(window).load(function() {
     //if navigator.geolocation is not supported then run this function
     noWeather();
   }
+
+  $("#getCity").on("click",function(){
+    var enteredCity = $(".city").val();
+    getCityWeather(enteredCity);
+  })
 });
 
 //if the geolocation is disabled or not available
@@ -37,7 +42,7 @@ function noWeather() {
   $(".weather_temp p").html(noTemp);
 }
 
-//method to get weather from api
+//method to get weather from api by latitude and longitude
 function getWeather(lat, lon) {
   //Jquery ajax to get the data from the api endpoint
   $.ajax({
@@ -45,26 +50,48 @@ function getWeather(lat, lon) {
     type: 'GET', //HTTP GET verb used to get the information from the server
     data:{lat:lat,lon:lon,units:"metric",APPID:key}, //data being sent to send to the server to know what data to send back
     dataType: 'json', //return type of the data being received
-    success: function(json) { //callback function executed if the request was succcessful
-      console.log(json); //outout the information as raw json
-      $(".weather_location .text-center").html("<strong>" + json.name + ", " + json.sys.country + "</strong>");
-      $(".weather_condition .text-center").html(json.weather[0].description);
-
-      //temp tag doesn't exist using it to differentiate the temperature value from the unit
-      $(".weather_temp .text-center").html("<temp>"+json.main.temp+"</temp><sup>o</sup>C");
-      $(".temp_unit").val("c");
-
-      //decide if it is day or night
-      var dayNight = day_night(json.sys.sunrise,json.sys.sunset);
-      var icon = "owf-"+json.weather[0].id+""+dayNight;
-      $(".weather_icon_div i").addClass("owf");
-      $(".weather_icon_div i").addClass(icon);
-      if(dayNight=="-n")
-      {
-        $("body").css("background",nightTime);
-      }else{$("body").css("background",dayTime);}
+    success: function(jsonResult) { //callback function executed if the request was succcessful
+      console.log(jsonResult); //outout the information as raw json
+      setUI(jsonResult);
     }
   });
+}
+
+function getCityWeather(city){
+  city = city+",ng";
+
+  //Jquery ajax to get the city weatherdata from the api endpoint
+  $.ajax({
+    url: link, //api endpoint link
+    type: 'GET', //HTTP GET verb used to get the information from the server
+    data:{q:city,units:"metric",APPID:key}, //data being sent to send to the server to know what data to send back
+    dataType: 'json', //return type of the data being received
+    success: function(jsonResult) { //callback function executed if the request was succcessful
+      console.log(jsonResult); //outout the information as raw json
+      setUI(jsonResult);
+    }
+  });
+
+}
+
+function setUI(json)
+{
+  $(".weather_location .text-center").html("<strong>" + json.name + ", " + json.sys.country + "</strong>");
+  $(".weather_condition .text-center").html(json.weather[0].description);
+
+  //temp tag doesn't exist using it to differentiate the temperature value from the unit
+  $(".weather_temp .text-center").html("<temp>"+json.main.temp+"</temp><sup>o</sup>C");
+  $(".temp_unit").val("c");
+
+  //decide if it is day or night
+  var dayNight = day_night(json.sys.sunrise,json.sys.sunset);
+  var icon = "owf-"+json.weather[0].id+""+dayNight;
+  $(".weather_icon_div i").addClass("owf");
+  $(".weather_icon_div i").addClass(icon);
+  if(dayNight=="-n")
+  {
+    $("body").css("background",nightTime);
+  }else{$("body").css("background",dayTime);}
 }
 
 //function that controls changing the background color of the app if it is day or night
