@@ -46,6 +46,7 @@ function getWeather(lat, lon) {
     data:{lat:lat,lon:lon,units:"metric",APPID:key}, //data being sent to send to the server to know what data to send back
     dataType: 'json', //return type of the data being received
     success: function(json) { //callback function executed if the request was succcessful
+      console.log(json); //outout the information as raw json
       $(".weather_location .text-center").html("<strong>" + json.name + ", " + json.sys.country + "</strong>");
       $(".weather_condition .text-center").html(json.weather[0].description);
 
