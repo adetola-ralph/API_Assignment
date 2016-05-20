@@ -86,6 +86,9 @@ function setUI(json)
   //decide if it is day or night
   var dayNight = day_night(json.sys.sunrise,json.sys.sunset);
   var icon = "owf-"+json.weather[0].id+""+dayNight;
+  $(".weather_icon_div i").removeClass();
+  $(".weather_icon_div i").addClass("weather_icon");
+  $(".weather_icon_div i").addClass("owf-10x");
   $(".weather_icon_div i").addClass("owf");
   $(".weather_icon_div i").addClass(icon);
   if(dayNight=="-n")
